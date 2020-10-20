@@ -2,15 +2,12 @@ package com.company;
 
 public class Main {
 
+
     public static void main(String[] args) {
         Board board = new Board();
-
-        Board.Direction a = Board.Direction.East;
-
-        int val = a.getVal();
-
         //System.out.println(board.getSolvable());
         board.displayBoard();
+        board.displaySolution();
         //gameLoop(board);
     }
     public static void gameLoop(Board board){
