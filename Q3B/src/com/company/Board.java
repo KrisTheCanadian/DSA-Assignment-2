@@ -137,7 +137,9 @@ public class Board {
         Node n;
         int fakeMoveIndex;
         while(!solvable) {
-
+            if(tree.isEmpty()){
+                return;
+            }
             n = tree.peek();
             fakeMoveIndex = fakeMove(Direction.South, n.Position);
 
