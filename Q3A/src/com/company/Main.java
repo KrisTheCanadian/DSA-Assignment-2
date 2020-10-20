@@ -4,7 +4,8 @@ public class Main {
 
     public static void main(String[] args) {
         Board board = new Board();
-        System.out.println(board.getSolvable());
+        //System.out.println(board.getSolvable());
+        board.displayBoard();
         //gameLoop(board);
     }
     public static void gameLoop(Board board){

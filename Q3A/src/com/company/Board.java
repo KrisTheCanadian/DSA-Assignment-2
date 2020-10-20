@@ -13,48 +13,61 @@ public class Board {
     private int targetLocation;
     private boolean solvable = false;
 
-    public enum direction {
+    public enum Direction {
         North,
         South,
         East,
         West
     }
 
-    public Board(){
+    public Board() {
         Random rnd = new Random();
-        //d = 5 + rnd.nextInt(16); //<- TRUE BOARD
-        d = 4; //for testing (simplification)
-        size = d*d;
-        checkerboard = new ArrayList<>(d*d);
+        d = 5 + rnd.nextInt(16); //<- TRUE BOARD
+        size = d * d;
+        checkerboard = new ArrayList<>(d * d);
         fillBoard(0);
         location = 0;
         moves = 0;
-        solve(new ArrayList<Integer>(), 0, direction.North);
+
+        displayBoard();
+
+        Node val = SolveNew(new Node(null, 0, checkerboard.get(0)), null, new ArrayList<>());
+
+        System.out.println(val == null ? "No path" : "Has path");
     }
-    private void printBorder(){
+
+    private void displayPath(Node n)
+    {
+        if (n == null) { return; }
+        displayBoard(0, n.Position);
+        displayPath(n.ParentNode);
+    }
+
+    private void printBorder() {
         System.out.println("=====================================");
     }
 
-    public boolean getSolvable(){return solvable;}
+    public boolean getSolvable() {
+        return solvable;
+    }
 
-    public void displayBoard(){
+    public void displayBoard() {
         printBorder();
         System.out.println("Current Moves: " + moves);
         displayBoard(0, location);
         printBorder();
     }
 
-    private void displayBoard(int i, int loc){
-        if(i == loc){
-            System.out.print( "\t" + ">" + checkerboard.get(i++));
+    private void displayBoard(int i, int loc) {
+        if (i == loc) {
+            System.out.print("\t" + ">" + checkerboard.get(i++));
+        } else {
+            System.out.print("\t" + checkerboard.get(i++));
         }
-        else{
-            System.out.print( "\t" + checkerboard.get(i++));
-        }
-        if(i%d == 0){
+        if (i % d == 0) {
             System.out.println("");
         }
-        if(i < size){
+        if (i < size) {
             displayBoard(i, loc);
         }
     }
@@ -64,87 +77,134 @@ public class Board {
         Scanner sc = new Scanner(System.in);
         String input = sc.nextLine();
         switch (input) {
-            case "North" -> move(direction.North);
-            case "South" -> move(direction.South);
-            case "East" -> move(direction.East);
-            case "West" -> move(direction.West);
+            case "North" -> move(Direction.North);
+            case "South" -> move(Direction.South);
+            case "East" -> move(Direction.East);
+            case "West" -> move(Direction.West);
         }
 
     }
 
-    private void fillBoard(int i){
+    private void fillBoard(int i) {
         Random rnd = new Random();
-        checkerboard.add(1 + rnd.nextInt(d -1));
+        checkerboard.add(1 + rnd.nextInt(d - 1));
         i++;
-        if(i < size){
+        if (i < size) {
             fillBoard(i);
-        }
-        else{
+        } else {
             targetLocation = 1 + rnd.nextInt(size - 1); //we do not want the first start on a zero.
             checkerboard.set(targetLocation, 0);
             return;
         }
     }
-    public boolean checkWin(){
+
+    public boolean checkWin() {
         return checkerboard.get(location) == 0;
 
     }
 
-    private void solve(ArrayList<Integer> lastLocations, int _location, direction lastDir){
-        if(solvable){
-            return;
-        }
-        if(checkerboard.get(_location) == 0){
-            displayBoard(0, _location); //for testing (must remove)
-            printBorder(); // for testing (must remove)
-            solvable = true;
-            return;
-        }
-        int count = 0;
-        for (int location : lastLocations){
-            if(location == _location){
-                count++;
-                if(count == 50){
-                    return;
-                }
+
+    private Node SolveNew(Node n, Direction lastMove, ArrayList<Integer> posList)
+    {
+        int value = n.Value;
+        if (value == 0) { return n; }
+
+        posList.add(n.Position);
+
+        boolean canGoWest = lastMove != Direction.East && fakeMove(Direction.West, n.Position) > -1 && !posList.contains(fakeMove(Direction.West, n.Position));
+        boolean canGoEast = lastMove != Direction.West && fakeMove(Direction.East, n.Position) > -1 && !posList.contains(fakeMove(Direction.East, n.Position));
+        boolean canGoNorth = lastMove != Direction.South && fakeMove(Direction.North, n.Position) > -1 && !posList.contains(fakeMove(Direction.North, n.Position));
+        boolean canGoSouth = lastMove != Direction.North && fakeMove(Direction.South, n.Position) > -1 && !posList.contains(fakeMove(Direction.South, n.Position));
+
+        if (canGoWest)
+        {
+            int westPos = fakeMove(Direction.West, n.Position);
+            int westVal = checkerboard.get(westPos);
+            n.WestChild = new Node(n, westPos, westVal);
+            var node = SolveNew(n.WestChild, Direction.West, new ArrayList<>(posList));
+            if (node != null)
+            {
+                return node;
+            }
+            else
+            {
+                canGoWest = false;
             }
         }
 
-        lastLocations.add(_location);
-        int temp = 0;
-        if( lastDir != direction.South && (temp = fakeMove(direction.North, _location)) >= 0){
-            solve(lastLocations, temp, direction.North);
+        if (canGoEast)
+        {
+            int eastPos = fakeMove(Direction.East, n.Position);
+            int eastVal = checkerboard.get(eastPos);
+            n.EastChild = new Node(n, eastPos, eastVal);
+            Node node = SolveNew(n.EastChild, Direction.East, new ArrayList<>(posList));
+            if (node != null)
+            {
+                return node;
+            }
+            else
+            {
+                canGoEast = false;
+            }
         }
-        if( lastDir != direction.East && (temp = fakeMove(direction.West, _location)) >= 0){
-            solve(lastLocations, temp, direction.West);
+
+        if (canGoNorth)
+        {
+            int northPos = fakeMove(Direction.North, n.Position);
+            int northVal = checkerboard.get(northPos);
+            n.NorthChild = new Node(n, northPos, northVal);
+            Node node = SolveNew(n.NorthChild, Direction.North, new ArrayList<>(posList));
+            if (node != null)
+            {
+                return node;
+            }
+            else
+            {
+                canGoNorth = false;
+            }
         }
-        if( lastDir != direction.West && (temp = fakeMove(direction.East, _location)) >= 0){
-            solve(lastLocations, temp, direction.East);
+
+        if (canGoSouth)
+        {
+            int southPos = fakeMove(Direction.South, n.Position);
+            int southVal = checkerboard.get(southPos);
+            n.SouthChild = new Node(n, southPos, southVal);
+            Node node = SolveNew(n.SouthChild, Direction.South, new ArrayList<>(posList));
+            if (node != null)
+            {
+                return node;
+            }
+            else
+            {
+                canGoSouth = false;
+            }
         }
-        if( lastDir != direction.North && (temp = fakeMove(direction.South, _location)) >= 0){
-            solve(lastLocations, temp, direction.South);
+
+        if (!canGoWest && !canGoEast && !canGoNorth && !canGoSouth)
+        {
+            return null;
         }
-        if(!solvable){
-            solve(lastLocations, 0, null);
-        }
+
+        return null;
     }
 
-    private boolean validateMove(direction dir, int oldLocation, int newLocation){
-        if(newLocation < 0 || newLocation > size - 1){
+    private boolean validateMove(Direction dir, int oldLocation, int newLocation) {
+        if (newLocation < 0 || newLocation > size - 1) {
             return false;
-        }
-        else if(dir == direction.East || dir == direction.West){
-            if((oldLocation+1)/d != (newLocation+ 1) /d )
-            {
+        } else if (dir == Direction.East || dir == Direction.West) {
+            int one = (oldLocation + 1) / d;
+            int two = (newLocation) / d;
+
+            if (one != two) {
                 return false;
             }
         }
         return true;
     }
 
-    private int fakeMove(direction dir, int _location){
+    private int fakeMove(Direction dir, int _location) {
         int steps = checkerboard.get(_location);
-        switch(dir){
+        switch (dir) {
             case North:
                 steps = steps * -d;
                 break;
@@ -158,16 +218,16 @@ public class Board {
                 break;
         }
         int newLocation = _location + steps;
-        if(!validateMove(dir, _location, newLocation)){
+        if (!validateMove(dir, _location, newLocation)) {
             return -1;
         }
         checkWin();
         return newLocation;
     }
 
-    public void move(direction dir){
+    public void move(Direction dir) {
         int steps = checkerboard.get(location);
-        switch(dir){
+        switch (dir) {
             case North:
                 steps = steps * -d;
                 break;
@@ -181,7 +241,7 @@ public class Board {
                 break;
         }
         int newLocation = location + steps;
-        if(!validateMove(dir, location, newLocation)){
+        if (!validateMove(dir, location, newLocation)) {
             return;
         }
         location = newLocation;
