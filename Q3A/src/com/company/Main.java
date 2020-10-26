@@ -6,11 +6,8 @@ public class Main {
         Board board = new Board();
 
         Board.Direction a = Board.Direction.East;
-
-        int val = a.getVal();
-
-        //System.out.println(board.getSolvable());
         board.displayBoard();
+        System.out.println(board.getSolvable());
         //gameLoop(board);
     }
     public static void gameLoop(Board board){

@@ -7,7 +7,8 @@ public class Main {
         Board board = new Board();
         //System.out.println(board.getSolvable());
         board.displayBoard();
-        board.displaySolution();
+        //board.displaySolution();
+        System.out.println((board.getSolvable()));
         //gameLoop(board);
     }
     public static void gameLoop(Board board){

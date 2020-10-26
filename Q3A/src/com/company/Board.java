@@ -113,20 +113,24 @@ public class Board {
 
     private Node SolveNew(Node n, Direction lastMove, ArrayList<Integer> posList) {
         int value = n.Value;
-        if (value == 0) { return n; }
+        if (value == 0)
+        {
+            solvable = true;
+            return n;
+        }
 
         posList.add(n.Position);
 
-        boolean canGoWest = lastMove != Direction.East && fakeMove(Direction.West, n.Position) > -1 && !posList.contains(fakeMove(Direction.West, n.Position));
-        boolean canGoEast = lastMove != Direction.West && fakeMove(Direction.East, n.Position) > -1 && !posList.contains(fakeMove(Direction.East, n.Position));
-        boolean canGoNorth = lastMove != Direction.South && fakeMove(Direction.North, n.Position) > -1 && !posList.contains(fakeMove(Direction.North, n.Position));
-        boolean canGoSouth = lastMove != Direction.North && fakeMove(Direction.South, n.Position) > -1 && !posList.contains(fakeMove(Direction.South, n.Position));
+        boolean canGoWest = lastMove != Direction.East && fakeMove(Direction.West, n.Position) > -1 && !posList.contains(fakeMove(Direction.West, n.Position)); // time O(n)
+        boolean canGoEast = lastMove != Direction.West && fakeMove(Direction.East, n.Position) > -1 && !posList.contains(fakeMove(Direction.East, n.Position)); // time O(n)
+        boolean canGoNorth = lastMove != Direction.South && fakeMove(Direction.North, n.Position) > -1 && !posList.contains(fakeMove(Direction.North, n.Position)); // time O(n)
+        boolean canGoSouth = lastMove != Direction.North && fakeMove(Direction.South, n.Position) > -1 && !posList.contains(fakeMove(Direction.South, n.Position)); // time O(n)
 
         if (canGoWest) {
             int westPos = fakeMove(Direction.West, n.Position);
             int westVal = checkerboard.get(westPos);
             n.WestChild = new Node(n, westPos, westVal);
-            var node = SolveNew(n.WestChild, Direction.West, new ArrayList<>(posList));
+            var node = SolveNew(n.WestChild, Direction.West, new ArrayList<>(posList)); // time O(n), space O(n)
             if (node != null)
             {
                 return node;
@@ -141,7 +145,7 @@ public class Board {
             int eastPos = fakeMove(Direction.East, n.Position);
             int eastVal = checkerboard.get(eastPos);
             n.EastChild = new Node(n, eastPos, eastVal);
-            Node node = SolveNew(n.EastChild, Direction.East, new ArrayList<>(posList));
+            Node node = SolveNew(n.EastChild, Direction.East, new ArrayList<>(posList)); // time O(n), space O(n)
             if (node != null) {
                 return node;
             }
@@ -154,7 +158,7 @@ public class Board {
             int northPos = fakeMove(Direction.North, n.Position);
             int northVal = checkerboard.get(northPos);
             n.NorthChild = new Node(n, northPos, northVal);
-            Node node = SolveNew(n.NorthChild, Direction.North, new ArrayList<>(posList));
+            Node node = SolveNew(n.NorthChild, Direction.North, new ArrayList<>(posList)); // time O(n), space O(n)
             if (node != null) {
                 return node;
             }
@@ -167,7 +171,7 @@ public class Board {
             int southPos = fakeMove(Direction.South, n.Position);
             int southVal = checkerboard.get(southPos);
             n.SouthChild = new Node(n, southPos, southVal);
-            Node node = SolveNew(n.SouthChild, Direction.South, new ArrayList<>(posList));
+            Node node = SolveNew(n.SouthChild, Direction.South, new ArrayList<>(posList)); // time O(n), space O(n)
             if (node != null) {
                 return node;
             }

@@ -136,19 +136,19 @@ public class Board {
 
         Node n;
         int fakeMoveIndex;
-        while(!solvable) {
+        while(!solvable) { // while loop is O(n)
             if(tree.isEmpty()){
                 return;
             }
             n = tree.peek();
             fakeMoveIndex = fakeMove(Direction.South, n.Position);
 
-            if ( fakeMoveIndex > -1 && (n.lastDir == null || n.lastDir.getVal() < Direction.South.getVal()) && ! n.Path.contains(fakeMoveIndex)) {
+            if ( fakeMoveIndex > -1 && (n.lastDir == null || n.lastDir.getVal() < Direction.South.getVal()) && ! n.Path.contains(fakeMoveIndex)) { //Path check is O(n)
                 int southPos = fakeMoveIndex;
                 int southVal = checkerboard.get(southPos);
-                n.SouthChild = new Node(n, southPos, southVal, new ArrayList<>(n.Path));
+                n.SouthChild = new Node(n, southPos, southVal, new ArrayList<>(n.Path)); //O(n)
                 n.lastDir = Direction.South;
-                tree.push(n.SouthChild);
+                tree.push(n.SouthChild); //O(1)
                 if (southVal == 0) {
                     solvable = true;
                     break;
@@ -156,12 +156,12 @@ public class Board {
                 continue;
             }
 
-            fakeMoveIndex = fakeMove(Direction.West, n.Position);
+            fakeMoveIndex = fakeMove(Direction.West, n.Position); //O(1)
 
-            if ( fakeMoveIndex > -1 && !n.Path.contains(fakeMoveIndex) && (n.lastDir == null || n.lastDir.getVal() < Direction.West.getVal())) {
+            if ( fakeMoveIndex > -1 && !n.Path.contains(fakeMoveIndex) && (n.lastDir == null || n.lastDir.getVal() < Direction.West.getVal())) { //Path check is O(n)
                 int westPos = fakeMoveIndex;
                 int westVal = checkerboard.get(westPos);
-                n.WestChild = new Node(n, westPos, westVal, new ArrayList<>(n.Path));
+                n.WestChild = new Node(n, westPos, westVal, new ArrayList<>(n.Path)); //O(n)
                 n.lastDir = Direction.West;
                 tree.push(n.WestChild);
                 if (westVal == 0) {
@@ -173,10 +173,10 @@ public class Board {
 
             fakeMoveIndex = fakeMove(Direction.North, n.Position);
 
-            if (fakeMoveIndex > -1 && !n.Path.contains(fakeMoveIndex) && (n.lastDir == null || n.lastDir.getVal() < Direction.North.getVal())) {
+            if (fakeMoveIndex > -1 && !n.Path.contains(fakeMoveIndex) && (n.lastDir == null || n.lastDir.getVal() < Direction.North.getVal())) { //Path check is O(n)
                 int northPos = fakeMoveIndex;
                 int northVal = checkerboard.get(northPos);
-                n.NorthChild = new Node(n, northPos, northVal, new ArrayList<>(n.Path));
+                n.NorthChild = new Node(n, northPos, northVal, new ArrayList<>(n.Path)); //O(n)
                 n.lastDir = Direction.North;
                 tree.push(n.NorthChild);
                 if (northVal == 0) {
@@ -188,12 +188,12 @@ public class Board {
 
             fakeMoveIndex = fakeMove(Direction.East, n.Position);
 
-            if (fakeMoveIndex > -1 && !n.Path.contains(fakeMoveIndex) && (n.lastDir == null || n.lastDir.getVal() < Direction.East.getVal())) {
+            if (fakeMoveIndex > -1 && !n.Path.contains(fakeMoveIndex) && (n.lastDir == null || n.lastDir.getVal() < Direction.East.getVal())) { //Path check is O(n)
                 int eastPos = fakeMoveIndex;
                 int eastVal = checkerboard.get(eastPos);
-                n.EastChild = new Node(n, eastPos, eastVal, new ArrayList<>(n.Path));
+                n.EastChild = new Node(n, eastPos, eastVal, new ArrayList<>(n.Path)); //O(n)
                 n.lastDir = Direction.East;
-                tree.push(n.EastChild);
+                tree.push(n.EastChild); //O(1)
                 if (eastVal == 0) {
                     solvable = true;
                     break;
